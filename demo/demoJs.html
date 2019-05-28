@@ -1,0 +1,218 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>demo</title>
+  <style type="text/css">
+    .bg {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      -webkit-transition: opacity .5s linear;
+      -moz-transition: opacity .5s linear;
+      -o-transition: opacity .5s linear;
+      transition: opacity .5s linear;
+      opacity: 0;
+      filter: alpha(opacity=0);
+    }
+
+    #bg1 {
+      background: url(https://e-test-future-market.oss-cn-hangzhou.aliyuncs.com/test-plantform/wechat/avatar/be3556a5-f475-4392-ba45-1610c32de1b5.png) no-repeat;
+      background-size: 400px 200px;
+    }
+
+    #bg2 {
+      background: url(https://e-test-future-market.oss-cn-hangzhou.aliyuncs.com/test-plantform/wechat/avatar/7f94e6ea-ce5f-4ebc-8a11-4c044dc175dc.jpg) no-repeat;
+      background-size: 400px 200px;
+    }
+
+    #bg3 {
+      background: url(http://future-dev.doubozhibo.com/images/images/admobile/33ca4e90-19b5-4896-86d1-5049c545843c.png) no-repeat;
+      background-size: 400px 200px;
+    }
+
+    #bg4 {
+      background: url(http://future-dev.doubozhibo.com/images/images/admobile/35cd2905-d463-419e-9b31-2d1f426e7466.png) no-repeat;
+      background-size: 400px 200px;
+    }
+
+    #bg5 {
+      background: url(http://future-dev.doubozhibo.com/images/images/admobile/904d821e-d02d-4e6e-859a-106f72f98546.png) no-repeat;
+      background-size: 400px 200px;
+    }
+
+    .fadein {
+      opacity: 100;
+      filter: alpha(opacity=100);
+    }
+
+    .pagination {
+      width: auto;
+      display: table;
+      margin: 0 auto
+    }
+
+    .pagination-panel {
+      width: 550px;
+      position: absolute;
+      top: 180px;
+      z-index: 100;
+    }
+
+    .pagination li {
+      border-radius: 15px;
+      height: 5px;
+      width: 15px;
+      background: #fff;
+      float: left;
+      margin-right: 10px;
+      list-style-type: none;
+    }
+
+    .pagination li.active {
+      background: #52c6d8
+    }
+
+    .pagination li:last-child {
+      margin-right: 0
+    }
+
+    .swiperBox {
+      position: relative;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="swiperBox">
+    <div id="imgs">
+      <div id="bg1" class="bg"></div>
+      <div id="bg2" class="bg"></div>
+      <div id="bg3" class="bg"></div>
+      <div id="bg4" class="bg"></div>
+      <div id="bg5" class="bg"> </div>
+    </div>
+    <div class="pagination-panel">
+      <ul class="pagination">
+        <li id="dot_0" class="page-dot"></li>
+        <li id="dot_1" class="page-dot"></li>
+        <li id="dot_2" class="page-dot"></li>
+        <li id="dot_3" class="page-dot"></li>
+        <li id="dot_4" class="page-dot"></li>
+      </ul>
+    </div>
+  </div>
+</body>
+
+</html>
+<script type="text/javascript">
+
+  //封装的对象接受所有图片的盒元素与触发切换的最小滑动距离作为参数
+  var ImageSwiper = function (imgs, minRange) {
+    console.log(imgs, 'minRange最小滑动距离', minRange)
+    this.imgBox = imgs
+    this.imgs = imgs.children
+    this.cur_img = 1  //起始图片设为1 ,而非0,将在图片显示方法中作-1处理
+    this.ready_moved = true  //判断每次滑动开始的标记变量
+    this.imgs_count = this.imgs.length
+    this.touchX  //触控开始的手指最初落点
+    this.minRange = Number(minRange)
+    this.fadeIn  //图片切换的方式,这里使用淡入淡出
+    this.fadeOut
+    this.bindTouchEvn() //初始化绑定滑动事件
+    this.showPic(this.cur_img) //显示图片方法,注意其中图片编号的-1处理
+  }
+
+  ImageSwiper.prototype.bindTouchEvn = function () {
+    this.imgBox.addEventListener('touchstart', this.touchstart.bind(this), false)
+    this.imgBox.addEventListener('touchmove', this.touchmove.bind(this), false)
+    this.imgBox.addEventListener('touchend', this.touchend.bind(this), false)
+  }
+
+  //触摸开始---关键词e.touches
+  ImageSwiper.prototype.touchstart = function (e) {
+    if (this.ready_moved) {
+      let touch = e.touches[0]
+      this.touchX = touch.pageX
+      this.ready_moved = false
+    }
+  }
+
+  //触摸移动
+  ImageSwiper.prototype.touchmove = function (e) {
+    e.preventDefault()
+    let touch = this.touchX //移动的距离
+    let minRange = this.minRange//最小移动距离
+    let imgs_count = this.imgs_count
+    if (!this.ready_moved) {
+      let changeDist = e.changedTouches[0]
+      let totalMoveDist = changeDist.pageX + minRange
+      console.log(totalMoveDist,'totalMoveDist')
+      if (totalMoveDist < touch) {
+
+      }
+    }
+
+  }
+
+  //触摸结束
+  ImageSwiper.prototype.touchend = function (e) {
+    e.preventDefault();
+    var minRange = this.minRange
+    var touchX = this.touchX
+    var imgs_count = this.imgs_count
+    if (!this.ready_moved) {
+      var release = e.changedTouches[0];
+      var releasedAt = release.pageX;
+      if (releasedAt + minRange < touchX) {
+        this.ready_moved = true;
+        if (this.cur_img > (imgs_count - 1)) {//处理-1
+          this.cur_img = 0;
+        }
+        this.cur_img++;
+        showPic(this.cur_img); //展示图片
+      } else if (releasedAt - minRange > touchX) {
+        if (this.cur_img <= 1) {
+          this.cur_img = imgs_count + 1
+        }
+        this.cur_img--;
+        showPic(this.cur_img);
+        this.ready_moved = true;
+      }
+    }
+  }
+
+  //淡入
+  ImageSwiper.prototype.fadeIn = function (e) {
+    e.classList.add("fadeIn")
+  }
+
+  //淡出
+  ImageSwiper.prototype.fadeOut = function (e) {
+    Array.prototype.forEach.call(e, function (e) {
+      e.className = "bg"
+    })
+  }
+
+
+  ImageSwiper.prototype.showPic = function (cur_img) {
+    this.hidePics(this.imgs)
+    //得到图片元素的真实索引
+    var index = cur_img - 1
+    var active = document.getElementsByClassName("active")[0];
+    if (active) {
+      active.classList.remove("active")
+    }
+    console.log('当前索引', this.cur_img)
+    document.getElementById("dot_" + index).classList.add("active");
+    this.fadeIn(this.imgs[index]);
+  }
+
+  ImageSwiper.prototype.hidePics = function (e) {
+    this.fadeOut(e)
+  }
+  //传参
+  var imgs = new ImageSwiper(document.getElementById('imgs'), 30)
+</script>
